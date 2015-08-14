@@ -1,0 +1,23 @@
+<head>
+  <title>Sensor</title>
+  <script type="text/javascript">
+  var wsUri = "ws://{{req.headers.host}}/ws/sensor";
+  var ws = new WebSocket(wsUri);
+
+  ws.onmessage = function(ev) {
+    var payload = JSON.parse(ev.data);
+    var device = document.getElementById('device');
+    device.textContent = payload.deviceId;
+    var sensor = document.getElementById('sensor');
+    sensor.textContent = payload.light;
+  }
+  </script>
+</head>
+
+<body>
+    <div>Sensor Monitor:</div>
+    <div>
+      Id: <span id="device">xxx</span>
+      Value:<span id="sensor">00</span>
+    </div>
+</body>
