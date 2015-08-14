@@ -11,36 +11,33 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.widget.TextView;
 
-import java.util.List;
-
 public class SensorActivity extends ActionBarActivity implements SensorEventListener {
     private SensorManager mSensorManager;
     private Sensor mLight;
-    private MqttClient mClient;
+    private MyMqttClient mClient;
     private TextView mText;
+    private int mCount = 0;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_sensor);
-
         mSensorManager = (SensorManager)getSystemService(Context.SENSOR_SERVICE);
         mLight = mSensorManager.getDefaultSensor(Sensor.TYPE_LIGHT);
-
         mText = (TextView)findViewById(R.id.text);
-        mText.setText("");
 
         // dump sensor list
+        /*
+        mText.setText("");
         List<Sensor> sensors = mSensorManager.getSensorList(Sensor.TYPE_ALL);
         for (Sensor s : sensors) {
             mText.append(s.getName() + ':' + s.getType() + '\n');
         }
+        */
 
-        // connect MQTT Broker
-        MqttClient mClient = new MqttClient(this);
-        if (!mClient.connect()) {
-            // faile to connect.
-        }
+        // MQTT client
+        mClient = new MyMqttClient(this);
+        mClient.connect();
     }
 
     @Override
@@ -74,16 +71,23 @@ public class SensorActivity extends ActionBarActivity implements SensorEventList
     @Override
     protected void onResume() {
         super.onResume();
-        mSensorManager.registerListener(this, mLight, SensorManager.SENSOR_DELAY_NORMAL);
+        mSensorManager.registerListener(this, mLight, SensorManager.SENSOR_DELAY_UI);
     }
 
     @Override
     public final void onSensorChanged(SensorEvent event) {
-        float value = event.values[0];
-        String lightLevel = String.valueOf(value);
-        mText.setText("light: " + lightLevel);
+        if (mCount++ < 10) {
+            return;
+        } else {
+            mCount = 0; // reset counter
+        }
 
-        mClient.publish("light", lightLevel);
+        float value = event.values[0];
+
+        String lightLevel = String.valueOf(value);
+        mText.setText("light: " + String.valueOf(value));
+
+        mClient.publish("sensor", "light", value);
     }
 
     @Override
