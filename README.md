@@ -23,3 +23,7 @@ Publish the light sensor value to MQTT broker.
 Details
 -------
 See [the documents]() for more detail (in Japanese).
+
+* http://qiita.com/f_nishio/items/0b5161207a110f7bbef4
+* http://qiita.com/f_nishio/items/33b4922ccf705d74b002
+* http://qiita.com/f_nishio/items/f1652dfdecd12649e7ad
